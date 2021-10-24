@@ -16,7 +16,7 @@ try:
          motorRunning = True
          mm = False
          while motorRunning is True: 
-             val = sw.buttonIn
+             val = sw.buttonIn()
 
              if val == 1:
                  print("switch pressed")
