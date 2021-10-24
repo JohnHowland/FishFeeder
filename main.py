@@ -25,6 +25,7 @@ try:
              if val == True and mm == True:
                 print("switch released")
                 motorRunning = False
+                GPIO.output(4, 0)
 
 
 
