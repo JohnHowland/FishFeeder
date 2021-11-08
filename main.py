@@ -5,6 +5,8 @@ import os
 
 
 def getStatusIfUpdated():
+    global StatusFileTime, StatusFile, runStatus
+
     curfileTime = os.path.getmtime(StatusFile)
     print(f"curfileTime: {curfileTime}")
     if StatusFileTime != curfileTime:
@@ -35,6 +37,8 @@ def getStatusIfUpdated():
 
 
 def getUpatedFile():
+    global UpdateFileTime, UpdateFile, hoursBetweenCycles, cycleCount
+
     curfileTime = os.path.getmtime(UpdateFile)
     print(f"curfileTime: {curfileTime}")
     if UpdateFileTime != curfileTime:
