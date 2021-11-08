@@ -68,7 +68,6 @@ def getUpatedFile():
 
 
 
-
 runStatus = False
 cycleCount = 0
 hoursBetweenCycles = 12*60*60           #in seconds
