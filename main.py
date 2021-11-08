@@ -8,7 +8,7 @@ def getStatusIfUpdated():
     global StatusFileTime, StatusFile, runStatus
 
     curfileTime = os.path.getmtime(StatusFile)
-    print(f"curfileTime: {curfileTime}")
+#    print(f"curfileTime: {curfileTime}")
     if StatusFileTime != curfileTime:
         print("The STATUS file time is different")
         StatusFileTime = curfileTime
@@ -40,7 +40,7 @@ def getUpatedFile():
     global UpdateFileTime, UpdateFile, hoursBetweenCycles, cycleCount
 
     curfileTime = os.path.getmtime(UpdateFile)
-    print(f"curfileTime: {curfileTime}")
+#    print(f"curfileTime: {curfileTime}")
     if UpdateFileTime != curfileTime:
         print("The UPDATE file time is different")
         UpdateFileTime = curfileTime
@@ -85,10 +85,10 @@ GPIO.setup(4, GPIO.OUT)
 sw = btn.button(17)
 
 try:  
-    while True:  
+    while True: 
+        time.sleep(5.0) 
         if runStatus is True: 
-             time.sleep(5.0)
-           
+             
              if time.monotonic() - lastRunStamp > hoursBetweenCycles:
                  lastRunStamp = time.monotonic()
   
