@@ -5,7 +5,7 @@ import os
 
 
 def getStatusIfUpdated():
-    global StatusFileTime, StatusFile, runStatus
+    global StatusFileTime, StatusFile, runStatus, lastRunStamp
 
     curfileTime = os.path.getmtime(StatusFile)
 #    print(f"curfileTime: {curfileTime}")
@@ -22,6 +22,7 @@ def getStatusIfUpdated():
                 print("Run status to TRUE")
             elif "stop" in line:
                 runStatus = False
+                lastRunStamp = 0.0
                 print("Run status to FALSE")
             else:
                 print("ERROR parsing the status file")
@@ -51,8 +52,8 @@ def getUpatedFile():
             print(f"line: {line}")
             try:
                 line_strip = line.split('-')
-                hoursBetweenCycles = int(line_strip[0])*60*60
-                cycleCount = int(line_strip[1])
+                hoursBetweenCycles = float(line_strip[0])*60*60
+                cycleCount = float(line_strip[1])
             except:
                 print("Error with parsing line")
         
@@ -93,6 +94,7 @@ try:
                  lastRunStamp = time.monotonic()
   
                  for i in range(cycleCount):
+                     print("Motor on")
                      GPIO.output(4, 1)
                      motorRunning = True
                      mm = False
@@ -107,6 +109,7 @@ try:
                             print("switch released")
                             motorRunning = False
                             GPIO.output(4, 0)
+                            print("motor off")
 
         else:
             pass
