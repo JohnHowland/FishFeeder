@@ -1,6 +1,17 @@
 import RPi.GPIO as GPIO
 import time
 import peripherals.button as btn
+import os
+
+runStatus = False
+cycleCount = 0
+hoursBetweenCycles = 12*60*60           #in seconds
+
+StatusFile = "/home/pi/dev/fishFeederVars/status.txt"
+StatusFileTime = None
+UpdateFile = "/home/pi/dev/fishFeederVars/update.txt"
+UpdateFileTime = None
+lastRunStamp = 0.0
 
 GPIO.setwarnings(False) # Ignore warning for now
 GPIO.setmode(GPIO.BCM)
@@ -10,38 +21,91 @@ sw = btn.button(17)
 
 try:  
     while True:  
-         time.sleep(10.0)
-         GPIO.output(4, 1)
-         
-         motorRunning = True
-         mm = False
-         while motorRunning is True: 
-             val = sw.buttonIn()
+        if runStatus is True: 
+             time.sleep(5.0)
+           
+             if time.monotonic() - lastRunStamp > hoursBetweenCycles:
+                 lastRunStamp = time.monotonic()
+  
+                 for i in range(cycleCount):
+                     GPIO.output(4, 1)
+                     motorRunning = True
+                     mm = False
+                     while motorRunning is True: 
+                         #val = sw.buttonIn()
+                         val=1
+                         if val == 1:
+                             print("switch pressed")
+                             mm = True
 
-             if val == 1:
-                 print("switch pressed")
-                 mm = True
+                         if val == True and mm == True:
+                            print("switch released")
+                            motorRunning = False
+                            GPIO.output(4, 0)
 
-             if val == True and mm == True:
-                print("switch released")
-                motorRunning = False
-                GPIO.output(4, 0)
+        else:
+            pass
 
-
-
-
+        getStatusIfUpdated()
+        getUpatedFile()
 
 
-
-
-#        GPIO.output(4, 1)         # set GPIO24 to 1/GPIO.HIGH/True  
-#        time.sleep(2.0)                 # wait half a second  
-#        if GPIO.input(4):  
-#            print("LED just about to switch off" )
-#        GPIO.output(4, 0)         # set GPIO24 to 0/GPIO.LOW/False  
-#        time.sleep(2.0)                 # wait half a second  
-#        if not GPIO.input(4):  
-#            print("LED just about to switch on" ) 
 
 except KeyboardInterrupt:          # trap a CTRL+C keyboard interrupt  
     GPIO.cleanup()                 # resets all GPIO ports used by this program
+
+
+def getStatusIfUpdated():
+    curfileTime = os.path.getmtime(StatusFile)
+    print(f"curfileTime: {curfileTime}")
+    if StatusFileTime != curfileTime:
+        print("The STATUS file time is different")
+
+        try:
+            fp = open(StatusFile, "r")
+            line = fp.readline()
+            print(f"line: {line}")
+            if "start" in line:
+                runStatus = True
+                print("Run status to TRUE")
+            elif "stop" in line:
+                runStatus = False
+                print("Run status to FALSE")
+            else:
+                print("ERROR parsing the status file")
+            fp.close()
+        except:
+            print("Error occured in trying to open status file")
+
+
+
+        return True
+    else:
+        return False
+
+
+def getUpatedFile():
+    curfileTime = os.path.getmtime(UpdateFile)
+    print(f"curfileTime: {curfileTime}")
+    if UpdateFileTime != curfileTime:
+        print("The UPDATE file time is different")
+
+        try:
+            fp = open(UpdateFile, "r")
+            line = fp.readline()
+            print(f"line: {line}")
+            try:
+                line_strip = line.split('-')
+                hoursBetweenCycles = int(line_strip[0])*60*60
+                cycleCount = int(line_strip[1])
+            except:
+                print("Error with parsing line")
+        
+            fp.close()
+        except:
+            print("Error occured in trying to open status file")
+
+
+        return True
+    else:
+        return False
