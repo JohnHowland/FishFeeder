@@ -3,57 +3,6 @@ import time
 import peripherals.button as btn
 import os
 
-runStatus = False
-cycleCount = 0
-hoursBetweenCycles = 12*60*60           #in seconds
-
-StatusFile = "/home/pi/dev/fishFeederVars/status.txt"
-StatusFileTime = None
-UpdateFile = "/home/pi/dev/fishFeederVars/update.txt"
-UpdateFileTime = None
-lastRunStamp = 0.0
-
-GPIO.setwarnings(False) # Ignore warning for now
-GPIO.setmode(GPIO.BCM)
-GPIO.setup(4, GPIO.OUT)
-
-sw = btn.button(17)
-
-try:  
-    while True:  
-        if runStatus is True: 
-             time.sleep(5.0)
-           
-             if time.monotonic() - lastRunStamp > hoursBetweenCycles:
-                 lastRunStamp = time.monotonic()
-  
-                 for i in range(cycleCount):
-                     GPIO.output(4, 1)
-                     motorRunning = True
-                     mm = False
-                     while motorRunning is True: 
-                         #val = sw.buttonIn()
-                         val=1
-                         if val == 1:
-                             print("switch pressed")
-                             mm = True
-
-                         if val == True and mm == True:
-                            print("switch released")
-                            motorRunning = False
-                            GPIO.output(4, 0)
-
-        else:
-            pass
-
-        getStatusIfUpdated()
-        getUpatedFile()
-
-
-
-except KeyboardInterrupt:          # trap a CTRL+C keyboard interrupt  
-    GPIO.cleanup()                 # resets all GPIO ports used by this program
-
 
 def getStatusIfUpdated():
     curfileTime = os.path.getmtime(StatusFile)
@@ -109,3 +58,59 @@ def getUpatedFile():
         return True
     else:
         return False
+
+
+
+
+runStatus = False
+cycleCount = 0
+hoursBetweenCycles = 12*60*60           #in seconds
+
+StatusFile = "/home/pi/dev/fishFeederVars/status.txt"
+StatusFileTime = None
+UpdateFile = "/home/pi/dev/fishFeederVars/update.txt"
+UpdateFileTime = None
+lastRunStamp = 0.0
+
+GPIO.setwarnings(False) # Ignore warning for now
+GPIO.setmode(GPIO.BCM)
+GPIO.setup(4, GPIO.OUT)
+
+sw = btn.button(17)
+
+try:  
+    while True:  
+        if runStatus is True: 
+             time.sleep(5.0)
+           
+             if time.monotonic() - lastRunStamp > hoursBetweenCycles:
+                 lastRunStamp = time.monotonic()
+  
+                 for i in range(cycleCount):
+                     GPIO.output(4, 1)
+                     motorRunning = True
+                     mm = False
+                     while motorRunning is True: 
+                         #val = sw.buttonIn()
+                         val=1
+                         if val == 1:
+                             print("switch pressed")
+                             mm = True
+
+                         if val == True and mm == True:
+                            print("switch released")
+                            motorRunning = False
+                            GPIO.output(4, 0)
+
+        else:
+            pass
+
+        getStatusIfUpdated()
+        getUpatedFile()
+
+
+
+except KeyboardInterrupt:          # trap a CTRL+C keyboard interrupt  
+    GPIO.cleanup()                 # resets all GPIO ports used by this program
+
+
