@@ -9,6 +9,7 @@ def getStatusIfUpdated():
     print(f"curfileTime: {curfileTime}")
     if StatusFileTime != curfileTime:
         print("The STATUS file time is different")
+        StatusFileTime = curfileTime
 
         try:
             fp = open(StatusFile, "r")
@@ -38,6 +39,7 @@ def getUpatedFile():
     print(f"curfileTime: {curfileTime}")
     if UpdateFileTime != curfileTime:
         print("The UPDATE file time is different")
+        UpdateFileTime = curfileTime
 
         try:
             fp = open(UpdateFile, "r")
