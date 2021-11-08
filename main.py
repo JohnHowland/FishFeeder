@@ -53,7 +53,7 @@ def getUpatedFile():
             try:
                 line_strip = line.split('-')
                 hoursBetweenCycles = float(line_strip[0])*60*60
-                cycleCount = int(line_strip[1])
+                cycleCount = float(line_strip[1])
             except:
                 print("Error with parsing line")
         
