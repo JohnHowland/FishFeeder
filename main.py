@@ -89,8 +89,11 @@ GPIO.setmode(GPIO.BCM)
 GPIO.setup(4, GPIO.OUT)
 
 sw = btn.button(17)
-
 try:  
+    logging.info("Starting fish finder")
+    currentTime = time.localtime()
+    logging.info(str(currentTime))
+
     while True: 
         time.sleep(5.0) 
         if runStatus is True: 
@@ -129,6 +132,7 @@ try:
 
 
 except KeyboardInterrupt:          # trap a CTRL+C keyboard interrupt
+    logging.error("There was an error with the system")
     GPIO.cleanup()                 # resets all GPIO ports used by this program
 
 
