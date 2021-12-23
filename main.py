@@ -68,6 +68,11 @@ def getUpatedFile():
 
 TEST = True
 
+root_logger= logging.getLogger()
+root_logger.setLevel(logging.DEBUG) # or whatever
+handler = logging.FileHandler('test.log', 'w', 'utf-8') # or whatever
+handler.setFormatter(logging.Formatter('%(name)s %(message)s')) # or whatever
+root_logger.addHandler(handler)
 
 runStatus = False
 cycleCount = 0
@@ -76,7 +81,6 @@ hoursBetweenCycles = 12*60*60           #in seconds
 StatusFile = "/home/pi/dev/fishFeederVars/status.txt"
 StatusFileTime = None
 UpdateFile = "/home/pi/dev/fishFeederVars/update.txt"
-logging.basicConfig(filename = "/home/pi/dev/fishFeederVars/fishfeeder.log", encoding = 'utf-8', level = logging.DEBUG)
 UpdateFileTime = None
 lastRunStamp = 0.0
 
