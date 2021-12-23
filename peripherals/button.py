@@ -1,5 +1,6 @@
 import string
 import RPi.GPIO as GPIO # Import Raspberry Pi GPIO library
+import logging
 
 MAX_DEBOUNCE_NUMBER = 15
 
@@ -9,14 +10,14 @@ class button:
         self.pinNumber = pinNumber
         self.highCount = 0
         self.lowCount = 0
-        print("Init button: " + str(pinNumber))
+        logging.debug("Init button: " + str(pinNumber))
 
     def buttonIn(self):
         currentState = GPIO.input(self.pinNumber)
 
         if currentState == GPIO.LOW and self.highCount > MAX_DEBOUNCE_NUMBER and self.lowCount == 0:
             self.lowCount = 0
-            print("Button " + str(self.pinNumber) + " pressed.")
+            logging.debug("Button " + str(self.pinNumber) + " pressed.")
             ret = 1
         else:
             if currentState == GPIO.LOW:
@@ -24,7 +25,7 @@ class button:
             ret = 0
 
         if currentState == GPIO.HIGH:
-#            print("registered push")
+#            logging.debug("registered push")
             self.highCount += 1
             self.lowCount = 0
         else:

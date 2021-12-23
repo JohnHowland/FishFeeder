@@ -2,35 +2,34 @@ import RPi.GPIO as GPIO
 import time
 import peripherals.button as btn
 import os
+import logging
 
 
 def getStatusIfUpdated():
     global StatusFileTime, StatusFile, runStatus, lastRunStamp
 
     curfileTime = os.path.getmtime(StatusFile)
-#    print(f"curfileTime: {curfileTime}")
+#    logging.debug(f"curfileTime: {curfileTime}")
     if StatusFileTime != curfileTime:
-        print("The STATUS file time is different")
+        logging.debug("The STATUS file time is different")
         StatusFileTime = curfileTime
 
         try:
             fp = open(StatusFile, "r")
             line = fp.readline()
-            print(f"line: {line}")
+            logging.debug(f"line: {line}")
             if "start" in line:
                 runStatus = True
-                print("Run status to TRUE")
+                logging.debug("Run status to TRUE")
             elif "stop" in line:
                 runStatus = False
                 lastRunStamp = 0.0
-                print("Run status to FALSE")
+                logging.debug("Run status to FALSE")
             else:
-                print("ERROR parsing the status file")
+                logging.debug("ERROR parsing the status file")
             fp.close()
         except:
-            print("Error occured in trying to open status file")
-
-
+            logging.debug("Error occured in trying to open status file")
 
         return True
     else:
@@ -41,31 +40,33 @@ def getUpatedFile():
     global UpdateFileTime, UpdateFile, hoursBetweenCycles, cycleCount
 
     curfileTime = os.path.getmtime(UpdateFile)
-#    print(f"curfileTime: {curfileTime}")
+#    logging.debug(f"curfileTime: {curfileTime}")
     if UpdateFileTime != curfileTime:
-        print("The UPDATE file time is different")
+        logging.debug("The UPDATE file time is different")
         UpdateFileTime = curfileTime
 
         try:
             fp = open(UpdateFile, "r")
             line = fp.readline()
-            print(f"line: {line}")
+            logging.debug(f"line: {line}")
             try:
                 line_strip = line.split('-')
                 hoursBetweenCycles = float(line_strip[0])*60*60
                 cycleCount = int(line_strip[1])
             except:
-                print("Error with parsing line")
+                logging.debug("Error with parsing line")
         
             fp.close()
         except:
-            print("Error occured in trying to open status file")
+            logging.debug("Error occured in trying to open status file")
 
 
         return True
     else:
         return False
 
+
+TEST = True
 
 
 runStatus = False
@@ -75,6 +76,7 @@ hoursBetweenCycles = 12*60*60           #in seconds
 StatusFile = "/home/pi/dev/fishFeederVars/status.txt"
 StatusFileTime = None
 UpdateFile = "/home/pi/dev/fishFeederVars/update.txt"
+logging.basicConfig(filename = "/home/pi/dev/fishFeederVars/fishfeeder.log", encoding = 'utf-8', level = logging.DEBUG)
 UpdateFileTime = None
 lastRunStamp = 0.0
 
@@ -93,22 +95,26 @@ try:
                  lastRunStamp = time.monotonic()
   
                  for i in range(cycleCount):
-                     print("Motor on")
+                     logging.debug("Motor on")
                      GPIO.output(4, 1)
                      motorRunning = True
                      mm = False
                      while motorRunning is True: 
-                         #val = sw.buttonIn()
-                         val=1
-                         if val == 1:
-                             print("switch pressed")
+                         
+                        if TEST is False:
+                            val = sw.buttonIn()
+                        else:
+                            val = 1
+
+                        if val == 1:
+                             logging.debug("switch pressed")
                              mm = True
 
-                         if val == True and mm == True:
-                            print("switch released")
+                        if val == True and mm == True:
+                            logging.debug("switch released")
                             motorRunning = False
                             GPIO.output(4, 0)
-                            print("motor off")
+                            logging.debug("motor off")
 
         else:
             pass
@@ -118,7 +124,7 @@ try:
 
 
 
-except KeyboardInterrupt:          # trap a CTRL+C keyboard interrupt  
+except KeyboardInterrupt:          # trap a CTRL+C keyboard interrupt
     GPIO.cleanup()                 # resets all GPIO ports used by this program
 
 
